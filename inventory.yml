@@ -1,0 +1,6 @@
+# Ansible Inventory File without Groups (INI format)
+
+# List individual hosts
+54.197.79.76 ansible_user=jenkins ansible_ssh_private_key_file=~/.ssh/id_ed25519
+
+
