@@ -4,33 +4,18 @@ pipeline {
     stages {
         stage('Clone Git Repository') {
             steps {
-                git branch: 'main', url: 'https://github.com/chrisdylan237/devops.git'
-            }
-        }
-
-        stage('List Workspace Contents') {
-            steps {
-                script {
-                    // List contents of the workspace to check directory structure
-                    sh '''
-                    ls -l
-                    '''
-                }
+                sh '''
+                git clone https://github.com/chrisdylan237/devops.git
+                '''
             }
         }
 
         stage('Change Directory to DevOps') {
             steps {
                 script {
-                    // Check if 'devops' directory exists and change directory
+                    // Change directory to 'devops' and verify
                     sh '''
-                    if [ -d "devops" ]; then
-                        cd devops
-                        echo "Changed directory to devops"
-                    else
-                        echo "Directory 'devops' does not exist"
-                        exit 1
-                    fi
+                    cd devops
                     pwd
                     '''
                 }
@@ -40,8 +25,9 @@ pipeline {
         stage('List Directory Contents') {
             steps {
                 script {
-                    // List contents of the 'devops' directory
+                    // Change directory to 'devops' and list contents
                     sh '''
+                    cd devops
                     ls -l
                     '''
                 }
@@ -51,8 +37,9 @@ pipeline {
         stage('Verify Playbook and Inventory Files') {
             steps {
                 script {
-                    // Verify presence of playbook and inventory files
+                    // Change directory to 'devops' and verify specific files
                     sh '''
+                    cd devops
                     ls -l playbook.yml inventory.yml
                     '''
                 }
@@ -62,8 +49,9 @@ pipeline {
         stage('Run Ansible Playbook') {
             steps {
                 script {
-                    // Run Ansible playbook
+                    // Change directory to 'devops' and run Ansible playbook
                     sh '''
+                    cd devops
                     ansible-playbook -i inventory.yml playbook.yml
                     '''
                 }
