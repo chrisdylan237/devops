@@ -10,34 +10,48 @@ pipeline {
 
         stage('Change Directory to DevOps') {
             steps {
-                dir('devops') {
-                    script {
-                        sh 'pwd'
-                    }
+                script {
+                    // Change directory to 'devops' and verify
+                    sh '''
+                    cd devops
+                    pwd
+                    '''
                 }
             }
         }
 
         stage('List Directory Contents') {
             steps {
-                dir('devops') {
-                    sh 'ls -l'
+                script {
+                    // Change directory to 'devops' and list contents
+                    sh '''
+                    cd devops
+                    ls -l
+                    '''
                 }
             }
         }
 
         stage('Verify Playbook and Inventory Files') {
             steps {
-                dir('devops') {
-                    sh 'ls -l playbook.yml inventory.yml'
+                script {
+                    // Change directory to 'devops' and verify specific files
+                    sh '''
+                    cd devops
+                    ls -l playbook.yml inventory.yml
+                    '''
                 }
             }
         }
 
         stage('Run Ansible Playbook') {
             steps {
-                dir('devops') {
-                    sh 'ansible-playbook -i inventory.yml playbook.yml'
+                script {
+                    // Change directory to 'devops' and run Ansible playbook
+                    sh '''
+                    cd devops
+                    ansible-playbook -i inventory.yml playbook.yml
+                    '''
                 }
             }
         }
