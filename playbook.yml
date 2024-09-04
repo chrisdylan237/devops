@@ -1,0 +1,73 @@
+---
+- name: Install Docker and SonarQube
+  hosts: all
+  become: yes  # Elevates the privilege to run commands as sudo
+  tasks:
+
+    - name: Update the apt package index
+      apt:
+        update_cache: yes
+
+    - name: Install required packages
+      apt:
+        name: 
+          - ca-certificates
+          - curl
+        state: present
+
+    - name: Add Docker's official GPG key
+      command: >
+        curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+      args:
+        creates: /etc/apt/keyrings/docker.asc
+
+    - name: Ensure Docker keyring directory exists
+      file:
+        path: /etc/apt/keyrings
+        state: directory
+        mode: '0755'
+
+    - name: Set permissions for Docker's GPG key
+      file:
+        path: /etc/apt/keyrings/docker.asc
+        mode: '0644'
+
+    - name: Add Docker repository
+      command: >
+        sh -c 'echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo \"$VERSION_CODENAME\") stable" > /etc/apt/sources.list.d/docker.list'
+      args:
+        creates: /etc/apt/sources.list.d/docker.list
+
+    - name: Update the apt package index again after adding Docker repo
+      apt:
+        update_cache: yes
+
+    - name: Install Docker packages
+      apt:
+        name:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+          - docker.io
+          - docker-buildx-plugin
+          - docker-compose-plugin
+        state: present
+
+    - name: Ensure Docker service is running and enabled
+      service:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Run SonarQube container
+      docker_container:
+        name: sonarqube
+        image: sonarqube:latest
+        ports:
+          - "9000:9000"
+        env:
+          SONAR_ES_BOOTSTRAP_CHECKS_DISABLE: "true"
+        state: started
+        restart_policy: always
+
+
