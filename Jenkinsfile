@@ -8,12 +8,29 @@ pipeline {
             }
         }
 
+        stage('List Workspace Contents') {
+            steps {
+                script {
+                    // List contents of the workspace to check directory structure
+                    sh '''
+                    ls -l
+                    '''
+                }
+            }
+        }
+
         stage('Change Directory to DevOps') {
             steps {
                 script {
-                    // Change directory to 'devops' and verify
+                    // Check if 'devops' directory exists and change directory
                     sh '''
-                    cd devops
+                    if [ -d "devops" ]; then
+                        cd devops
+                        echo "Changed directory to devops"
+                    else
+                        echo "Directory 'devops' does not exist"
+                        exit 1
+                    fi
                     pwd
                     '''
                 }
@@ -23,9 +40,8 @@ pipeline {
         stage('List Directory Contents') {
             steps {
                 script {
-                    // Change directory to 'devops' and list contents
+                    // List contents of the 'devops' directory
                     sh '''
-                    cd devops
                     ls -l
                     '''
                 }
@@ -35,9 +51,8 @@ pipeline {
         stage('Verify Playbook and Inventory Files') {
             steps {
                 script {
-                    // Change directory to 'devops' and verify specific files
+                    // Verify presence of playbook and inventory files
                     sh '''
-                    cd devops
                     ls -l playbook.yml inventory.yml
                     '''
                 }
@@ -47,9 +62,8 @@ pipeline {
         stage('Run Ansible Playbook') {
             steps {
                 script {
-                    // Change directory to 'devops' and run Ansible playbook
+                    // Run Ansible playbook
                     sh '''
-                    cd devops
                     ansible-playbook -i inventory.yml playbook.yml
                     '''
                 }
